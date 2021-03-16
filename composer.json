@@ -1,0 +1,28 @@
+{
+    "name": "cacing69/bitbuilder",
+    "description": "Make easy query builder / eloquent queries with requests for API Response",
+    "type": "library",
+    "require": {},
+    "license": "MIT",
+    "keywords": [
+        "query-builder",
+        "eloquent",
+        "lumen",
+        "laravel"
+    ],
+    "require": {
+        "php": ">=5.6.4",
+        "laravel/framework": ">=5.4"
+    },
+    "authors": [
+        {
+            "name": "cacing69",
+            "email": "cacingworm69@gmail.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Cacing69\\BITBuilder\\": "src/"
+        }
+    }
+}
