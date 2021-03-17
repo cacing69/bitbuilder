@@ -72,10 +72,10 @@ public function index(Request $request)
 ```php
 
 Filterable::callback("status", function($query, $value) {
-						if($value == 1) {
-							$query->where('column', "custom_value"); 
-						}
-					})
+	if($value == 1) {
+		$query->where('column', "custom_value"); 
+	}
+})
 ```
 
 ## want to add more feature
