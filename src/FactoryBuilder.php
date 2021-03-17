@@ -21,6 +21,7 @@ class FactoryBuilder {
 	protected $source;
 	protected $request;
 	protected $filters;
+	protected $allowedFilters;
 	protected $sorts;
 	protected $maxPerPage = 100;
 	protected $perPage = 20;

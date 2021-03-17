@@ -6,7 +6,7 @@ This package has feature to filter, sort and include relations based on request.
 
 ## Quick Installation
 ```
-composer require cacin69/bitbuilder
+composer require cacing69/bitbuilder
 ```
 
 ## How to use with eloquent
