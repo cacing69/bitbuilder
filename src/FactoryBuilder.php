@@ -1,16 +1,29 @@
 <?php
 namespace Cacing69\BITBuilder;
 
-use Cacing69\BITBuilder\CallbackFilter;
-use Cacing69\BITBuilder\ExactFilter;
-use Cacing69\BITBuilder\FieldSort;
+use Cacing69\BITBuilder\Adapters\QueryBuilderAdapter;
+use Cacing69\BITBuilder\Exceptions\FactoryBuilderException;
+use Cacing69\BITBuilder\Filterable\CallbackFilter;
+use Cacing69\BITBuilder\Filterable\ExactFilter;
+use Cacing69\BITBuilder\Filterable\GreaterThanEqualFilter;
+use Cacing69\BITBuilder\Filterable\GreaterThanFilter;
+use Cacing69\BITBuilder\Filterable\LessThanEqualFilter;
+use Cacing69\BITBuilder\Filterable\LessThanFilter;
+use Cacing69\BITBuilder\Sortable\FieldSort;
 use Illuminate\Database\Query\Builder as QueryBuilder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
 class FactoryBuilder {
+	use QueryBuilderAdapter;
+
 	protected $source;
 	protected $request;
+	protected $filters;
+	protected $sorts;
+	protected $maxPerPage = 100;
+	protected $perPage = 20;
+	protected $showAllData = false;
 
 	public function on($source, ?Request $request = null)
 	{
@@ -21,55 +34,72 @@ class FactoryBuilder {
 		}
 
 		$this->request = $request ?? app(Request::class);
-		return $this;
-	}
 
-	public function limit($value)
-	{
-		$this->source = $this->source->limit($value);
 		return $this;
-	}
-
-	public function get()
-	{
-		return $this->source->get();
 	}
 
 	public function addSorts($sorts)
 	{
-		foreach ($sorts as $key => $value) {
-			if($value instanceof FieldSort) {
-				$mode = "DESC";
+		if($this->request->filled("sort_by")) {
+			foreach ($sorts as $key => $value) {
+				if($value instanceof FieldSort) {
+					$mode = "DESC";
+					
+					if(Str::contains($this->request->order_by, "-")) {
+						$mode = "ASC";
+					}
 
-				if(Str::contains($this->request->order_by, "-")) {
-					$mode = "ASC";
+					$this->source = $this->source->orderBy($value->column, $mode);
 				}
-
-				$this->source = $this->source->orderBy($value->realColumn, $mode);
 			}
 		}
+
+		return $this;
+	}
+
+	public function showAllData($value)
+	{
+		$this->showAllData = $value;
+
+		return $this;
+	}
+
+	public function defaultSort($value)
+	{
+		$mode = "DESC";
+					
+		if(Str::contains($value, "-")) {
+			$mode = "ASC";
+		}
+
+		$this->source = $this->source->orderBy($value, $mode);
 
 		return $this;
 	}
 
 	public function addFilters($filters)
 	{
-		foreach ($filters as $key => $value) {
-			if($value instanceof ExactFilter) {
-				$this->source = $this->source->where($value->realColumn, $this->request->filter[$value->column]);
-			}
-
-			if($value instanceof CallbackFilter) {
-				$callback = $value->callback;
- 				$this->source = $this->source->where($callback($this->source, $this->request->filter[$value->column]));
+		if($this->request->filled("filter")) {
+			foreach ($filters as $key => $value) {
+				if(array_key_exists($value->key, $this->request->filter)){
+					if($value instanceof ExactFilter) {
+						$this->source = $this->source->where($value->column, $this->request->filter[$value->key]);
+					} else if($value instanceof GreaterThanFilter) {
+						$this->source = $this->source->where($value->column, ">" , $this->request->filter[$value->key]);
+					} else if($value instanceof GreaterThanEqualFilter) {
+						$this->source = $this->source->where($value->column, ">=" , $this->request->filter[$value->key]);
+					} else if($value instanceof LessThanFilter) {
+						$this->source = $this->source->where($value->column, "<" , $this->request->filter[$value->key]);
+					} else if($value instanceof LessThanEqualFilter) {
+						$this->source = $this->source->where($value->column, "<=" , $this->request->filter[$value->key]);
+					} else if($value instanceof CallbackFilter) {
+						$callback = $value->column;
+		 				$this->source = $this->source->where($callback($this->source, $this->request->filter[$value->key]));
+					}
+				}
 			}
 		}
-		return $this;
-	}
 
-	public function where(...$params)
-	{
-		$this->source = $this->source->where($params[0], $params[1], $params[2]);
 		return $this;
 	}
 }

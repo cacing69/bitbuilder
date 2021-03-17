@@ -1,13 +1,8 @@
 <?php
 namespace Cacing69\BITBuilder\Filterable;
 
-class CallbackFilter {
-	public $column;
-	public $callback;
+use Cacing69\BITBuilder\Adapters\MappingAdapter;
 
-	public function __construct($column, $callback)
-	{
-		$this->column = $column;
-		$this->callback = $callback;
-	}
+class CallbackFilter extends MappingAdapter {
+	
 }

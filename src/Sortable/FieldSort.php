@@ -1,12 +1,12 @@
 <?php
 namespace Cacing69\BITBuilder\Sortable;
 class FieldSort {
+	public $key;
 	public $column;
-	public $realColumn;
 
-	public function __construct($column, $realColumn = null)
+	public function __construct($key, $column = null)
 	{
-		$this->column = $column;
-		$this->realColumn = $realColumn ?? $column;
+		$this->key = $key;
+		$this->column = $column ?? $key;
 	}
 }
