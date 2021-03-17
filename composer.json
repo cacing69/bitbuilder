@@ -1,6 +1,6 @@
 {
     "name": "cacing69/bitbuilder",
-    "description": "Make easy query builder / eloquent queries with requests for API Response",
+    "description": "Make easy query builder / eloquent queries based on requests for API Response",
     "type": "library",
     "require": {},
     "license": "MIT",
@@ -23,6 +23,16 @@
     "autoload": {
         "psr-4": {
             "Cacing69\\BITBuilder\\": "src/"
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Cacing69\\BITBuilder\\BITBuilderServiceProvider"
+            ],
+            "aliases": {
+                "BITBuilder": "Cacing69\\BITBuilder\\BITBuilder"
+            }
         }
     }
 }
