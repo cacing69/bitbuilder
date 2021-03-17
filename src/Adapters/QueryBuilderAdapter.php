@@ -10,7 +10,7 @@ trait QueryBuilderAdapter {
 
 	public function get()
 	{
-		if(!$this->showAllData) {
+		if(!$this->showAll) {
 			if($this->request->filled("per_page")) {
 				$this->perPage = $this->request->per_page;
 			}
@@ -31,7 +31,10 @@ trait QueryBuilderAdapter {
 	
 	public function with(...$params)
 	{
-		$this->source = $this->source->with(...$params);
+		if($this->source instanceof EloquentBuilder) {
+			$this->source = $this->source->with(...$params);
+		}
+		
 		return $this;
 	}
 

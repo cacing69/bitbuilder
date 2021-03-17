@@ -11,6 +11,7 @@ use Cacing69\BITBuilder\Filterable\LessThanEqualFilter;
 use Cacing69\BITBuilder\Filterable\LessThanFilter;
 use Cacing69\BITBuilder\Sortable\FieldSort;
 use Illuminate\Database\Query\Builder as QueryBuilder;
+use Illuminate\Database\Eloquent\Builder as EloquentBuilder;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
@@ -23,7 +24,7 @@ class FactoryBuilder {
 	protected $sorts;
 	protected $maxPerPage = 100;
 	protected $perPage = 20;
-	protected $showAllData = false;
+	protected $showAll = false;
 
 	public function on($source, ?Request $request = null)
 	{
@@ -57,10 +58,9 @@ class FactoryBuilder {
 		return $this;
 	}
 
-	public function showAllData($value)
+	public function removeLimit()
 	{
-		$this->showAllData = $value;
-
+		$this->showAll = true;
 		return $this;
 	}
 
