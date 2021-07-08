@@ -28,6 +28,16 @@ trait QueryBuilderAdapter {
 		
 		return $this->source->get();
 	}
+
+	public function toSql()
+	{
+		return $this->source->toSql();
+	}
+
+	public function getBindings()
+	{
+		return $this->source->getBindings();
+	}
 	
 	public function with(...$params)
 	{
@@ -47,5 +57,11 @@ trait QueryBuilderAdapter {
 	public function paginate($paginate)
 	{
 		return $this->source->paginate($paginate);;
+	}
+
+	// new
+	public function moveCursor($column, $last_id)
+	{
+		return $this->source->where($column, $this->nextCursor, $last_id);
 	}
 }

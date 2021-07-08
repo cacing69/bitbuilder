@@ -21,11 +21,12 @@ class FactoryBuilder {
 	protected $source;
 	protected $request;
 	protected $filters;
-	protected $allowedFilters;
 	protected $sorts;
 	protected $maxPerPage = 100;
 	protected $perPage = 20;
 	protected $showAll = false;
+	protected $paginationMode = "DESC";
+	protected $nextCursor = "<";
 
 	public function on($source, ?Request $request = null)
 	{
@@ -45,13 +46,12 @@ class FactoryBuilder {
 		if($this->request->filled("sort_by")) {
 			foreach ($sorts as $key => $value) {
 				if($value instanceof FieldSort) {
-					$mode = "DESC";
-					
-					if(Str::contains($this->request->order_by, "-")) {
-						$mode = "ASC";
+					if(Str::contains($this->request->sort_by, "-")) {
+						$this->paginationMode = "ASC";
+						$this->nextCursor = ">";
 					}
 
-					$this->source = $this->source->orderBy($value->column, $mode);
+					$this->source = $this->source->orderBy($value->column, $this->paginationMode);
 				}
 			}
 		}
@@ -67,13 +67,13 @@ class FactoryBuilder {
 
 	public function defaultSort($value)
 	{
-		$mode = "DESC";
-					
+
 		if(Str::contains($value, "-")) {
-			$mode = "ASC";
+			$this->paginationMode = "ASC";
+			$this->nextCursor = ">";
 		}
 
-		$this->source = $this->source->orderBy($value, $mode);
+		$this->source = $this->source->orderBy($value, $this->paginationMode);
 
 		return $this;
 	}
@@ -82,20 +82,22 @@ class FactoryBuilder {
 	{
 		if($this->request->filled("filter")) {
 			foreach ($filters as $key => $value) {
-				if(array_key_exists($value->key, $this->request->filter)){
-					if($value instanceof ExactFilter) {
-						$this->source = $this->source->where($value->column, $this->request->filter[$value->key]);
-					} else if($value instanceof GreaterThanFilter) {
-						$this->source = $this->source->where($value->column, ">" , $this->request->filter[$value->key]);
-					} else if($value instanceof GreaterThanEqualFilter) {
-						$this->source = $this->source->where($value->column, ">=" , $this->request->filter[$value->key]);
-					} else if($value instanceof LessThanFilter) {
-						$this->source = $this->source->where($value->column, "<" , $this->request->filter[$value->key]);
-					} else if($value instanceof LessThanEqualFilter) {
-						$this->source = $this->source->where($value->column, "<=" , $this->request->filter[$value->key]);
-					} else if($value instanceof CallbackFilter) {
-						$callback = $value->column;
-		 				$this->source = $this->source->where($callback($this->source, $this->request->filter[$value->key]));
+				if(gettype($this->request->filter) == "array") {
+					if(array_key_exists($value->key, $this->request->filter ?? [])){
+						if($value instanceof ExactFilter) {
+							$this->source = $this->source->where($value->column, $this->request->filter[$value->key]);
+						} else if($value instanceof GreaterThanFilter) {
+							$this->source = $this->source->where($value->column, ">" , $this->request->filter[$value->key]);
+						} else if($value instanceof GreaterThanEqualFilter) {
+							$this->source = $this->source->where($value->column, ">=" , $this->request->filter[$value->key]);
+						} else if($value instanceof LessThanFilter) {
+							$this->source = $this->source->where($value->column, "<" , $this->request->filter[$value->key]);
+						} else if($value instanceof LessThanEqualFilter) {
+							$this->source = $this->source->where($value->column, "<=" , $this->request->filter[$value->key]);
+						} else if($value instanceof CallbackFilter) {
+							$callback = $value->column;
+							$this->source = $this->source->where($callback($this->source, $this->request->filter[$value->key]));
+						}
 					}
 				}
 			}
