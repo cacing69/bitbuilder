@@ -10,6 +10,7 @@ trait QueryBuilderAdapter {
 
 	public function get()
 	{
+
 		if(!$this->showAll) {
 			if($this->request->filled("per_page")) {
 				$this->perPage = $this->request->per_page;
@@ -20,10 +21,12 @@ trait QueryBuilderAdapter {
 			} else {
 				if($this->perPage > $this->maxPerPage) {
 					throw new FactoryBuilderException("max value per_page is 100");
+				} else {
+					if($this->perPage != 0) {
+						$this->limit($this->perPage);
+					}
 				}
 			}
-
-			$this->limit($this->perPage);
 		}
 		
 		return $this->source->get();
