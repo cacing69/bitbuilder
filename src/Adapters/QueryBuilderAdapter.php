@@ -23,7 +23,6 @@ trait QueryBuilderAdapter {
 				} else {
 					if($this->perPage != 0) {
 						if(!$this->showAll) {
-							dd(1);
 							$this->limit($this->perPage);
 						}
 					}
