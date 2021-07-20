@@ -3,8 +3,10 @@ namespace Cacing69\BITBuilder;
 
 use Cacing69\BITBuilder\Adapters\QueryBuilderAdapter;
 use Cacing69\BITBuilder\Exceptions\FactoryBuilderException;
+use Cacing69\BITBuilder\Filterable;
 use Cacing69\BITBuilder\Filterable\CallbackFilter;
 use Cacing69\BITBuilder\Filterable\ExactFilter;
+use Cacing69\BITBuilder\Filterable\LikeFilter;
 use Cacing69\BITBuilder\Filterable\GreaterThanEqualFilter;
 use Cacing69\BITBuilder\Filterable\GreaterThanFilter;
 use Cacing69\BITBuilder\Filterable\LessThanEqualFilter;
@@ -94,9 +96,14 @@ class FactoryBuilder {
 							$this->source = $this->source->where($value->column, "<" , $this->request->filter[$value->key]);
 						} else if($value instanceof LessThanEqualFilter) {
 							$this->source = $this->source->where($value->column, "<=" , $this->request->filter[$value->key]);
-						} else if($value instanceof CallbackFilter) {
-							$callback = $value->column;
-							$this->source = $this->source->where($callback($this->source, $this->request->filter[$value->key]));
+						} else if($value instanceof LikeFilter) {
+							if($value->mode == Filterable::LIKE_BEGIN_END) {
+								$this->source = $this->source->where($value->column, "LIKE" , "%".$this->request->filter[$value->key]."%");
+							} else if($value->mode == Filterable::LIKE_BEGIN) {
+								$this->source = $this->source->where($value->column, "LIKE" , $this->request->filter[$value->key]."%");
+							} else if($value->mode == Filterable::LIKE_END) {
+								$this->source = $this->source->where($value->column, "LIKE" , "%".$this->request->filter[$value->key]);
+							}
 						}
 					}
 				}
