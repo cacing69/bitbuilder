@@ -29,7 +29,7 @@ trait QueryBuilderAdapter {
 				}
 			}
 		}
-		
+
 		return $this->source->get();
 	}
 
@@ -42,13 +42,13 @@ trait QueryBuilderAdapter {
 	{
 		return $this->source->getBindings();
 	}
-	
+
 	public function with(...$params)
 	{
 		if($this->source instanceof EloquentBuilder) {
 			$this->source = $this->source->with(...$params);
 		}
-		
+
 		return $this;
 	}
 
@@ -66,6 +66,8 @@ trait QueryBuilderAdapter {
 	// new
 	public function moveCursor($column, $last_id)
 	{
-		return $this->source->where($column, $this->nextCursor, $last_id);
+		$this->source->where($column, $this->nextCursor, $last_id);
+
+		return $this;
 	}
 }

@@ -86,23 +86,25 @@ class FactoryBuilder {
 			foreach ($filters as $key => $value) {
 				if(gettype($this->request->filter) == "array") {
 					if(array_key_exists($value->key, $this->request->filter ?? [])){
-						if($value instanceof ExactFilter) {
-							$this->source = $this->source->where($value->column, $this->request->filter[$value->key]);
-						} else if($value instanceof GreaterThanFilter) {
-							$this->source = $this->source->where($value->column, ">" , $this->request->filter[$value->key]);
-						} else if($value instanceof GreaterThanEqualFilter) {
-							$this->source = $this->source->where($value->column, ">=" , $this->request->filter[$value->key]);
-						} else if($value instanceof LessThanFilter) {
-							$this->source = $this->source->where($value->column, "<" , $this->request->filter[$value->key]);
-						} else if($value instanceof LessThanEqualFilter) {
-							$this->source = $this->source->where($value->column, "<=" , $this->request->filter[$value->key]);
-						} else if($value instanceof LikeFilter) {
-							if($value->mode == Filterable::LIKE_BEGIN_END) {
-								$this->source = $this->source->where($value->column, "LIKE" , "%".$this->request->filter[$value->key]."%");
-							} else if($value->mode == Filterable::LIKE_BEGIN) {
-								$this->source = $this->source->where($value->column, "LIKE" , $this->request->filter[$value->key]."%");
-							} else if($value->mode == Filterable::LIKE_END) {
-								$this->source = $this->source->where($value->column, "LIKE" , "%".$this->request->filter[$value->key]);
+						if(strlen($this->request->filter[$value->key]) > 0) {
+							if($value instanceof ExactFilter) {
+								$this->source = $this->source->where($value->column, $this->request->filter[$value->key]);
+							} else if($value instanceof GreaterThanFilter) {
+								$this->source = $this->source->where($value->column, ">" , $this->request->filter[$value->key]);
+							} else if($value instanceof GreaterThanEqualFilter) {
+								$this->source = $this->source->where($value->column, ">=" , $this->request->filter[$value->key]);
+							} else if($value instanceof LessThanFilter) {
+								$this->source = $this->source->where($value->column, "<" , $this->request->filter[$value->key]);
+							} else if($value instanceof LessThanEqualFilter) {
+								$this->source = $this->source->where($value->column, "<=" , $this->request->filter[$value->key]);
+							} else if($value instanceof LikeFilter) {
+								if($value->mode == Filterable::LIKE_BEGIN_END) {
+									$this->source = $this->source->where($value->column, "LIKE" , "%".$this->request->filter[$value->key]."%");
+								} else if($value->mode == Filterable::LIKE_BEGIN) {
+									$this->source = $this->source->where($value->column, "LIKE" , $this->request->filter[$value->key]."%");
+								} else if($value->mode == Filterable::LIKE_END) {
+									$this->source = $this->source->where($value->column, "LIKE" , "%".$this->request->filter[$value->key]);
+								}
 							}
 						}
 					}
