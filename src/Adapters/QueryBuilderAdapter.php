@@ -60,7 +60,7 @@ trait QueryBuilderAdapter {
 
 	public function paginate($paginate)
 	{
-		return $this->source->paginate($paginate);;
+		return $this->source->paginate($paginate);
 	}
 
 	// new
