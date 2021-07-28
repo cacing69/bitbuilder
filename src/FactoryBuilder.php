@@ -20,15 +20,29 @@ use Illuminate\Support\Str;
 class FactoryBuilder {
 	use QueryBuilderAdapter;
 
+	const MODE_CURSOR = "cursor";
+	const MODE_PAGINATE = "paginate";
+
+	protected $mode;
 	protected $source;
 	protected $request;
 	protected $filters;
 	protected $sorts;
-	protected $maxPerPage = 100;
-	protected $perPage = 20;
-	protected $showAll = false;
-	protected $paginationMode = "DESC";
-	protected $nextCursor = "<";
+	protected $maxPerPage;
+	protected $perPage;
+	protected $showAll;
+	protected $paginationMode;
+	protected $nextCursor;
+	protected $cursor;
+
+	function __construct() {
+		$this->mode = FactoryBuilder::MODE_CURSOR;
+		$this->maxPerPage = 100;
+		$this->perPage = 20;
+		$this->showAll = false;
+		$this->paginationMode = "desc";
+		$this->nextCursor = "<";
+	}
 
 	public function on($source, ?Request $request = null)
 	{
@@ -111,6 +125,13 @@ class FactoryBuilder {
 				}
 			}
 		}
+
+		return $this;
+	}
+
+	public function setCursor($cursor)
+	{
+		$this->cursor = $cursor;
 
 		return $this;
 	}

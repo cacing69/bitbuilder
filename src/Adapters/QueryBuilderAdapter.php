@@ -30,6 +30,10 @@ trait QueryBuilderAdapter {
 			}
 		}
 
+		if($this->request->filled("last_id") && !empty($this->cursor)) {
+			$this->moveCursor("media_id", $this->request->last_id);
+		}
+
 		return $this->source->get();
 	}
 
@@ -63,7 +67,6 @@ trait QueryBuilderAdapter {
 		return $this->source->paginate($paginate);
 	}
 
-	// new
 	public function moveCursor($column, $last_id)
 	{
 		$this->source->where($column, $this->nextCursor, $last_id);
